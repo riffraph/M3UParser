@@ -1,8 +1,9 @@
 import sys
 
 class track():
-    def __init__(self, length, title):
+    def __init__(self, length, artist, title):
         self.length = length
+        self.artist = artist
         self.title = title
 
 # # # song info lines are formatted like:
@@ -14,7 +15,7 @@ def parseM3U(infile):
     print(infile)
 
     playlist = []
-    song = track(None,None)
+    trackObj = track(None, None, None)
 
     checkedFormat = False
     with open(infile) as f:
@@ -28,9 +29,11 @@ def parseM3U(infile):
                 return 
             elif line.startswith('#EXTINF:'):
                 # pull length and title from #EXTINF line
-                length,title=line.split('#EXTINF:')[1].split(',',1)
-                song = track(length, title)
-                playlist.append(song);
+                length, song = line.split('#EXTINF:')[1].split(',',1)
+                # split the song into artist and title
+                title, sep, artist = song.partition(" - ")
+                trackObj = track(length, artist, title)
+                playlist.append(trackObj);
 
     return playlist
 
@@ -40,7 +43,7 @@ def main():
     playlist = parseM3U(m3ufile)
     if playlist:
         for track in playlist:
-            print(track.title)
+            print(track.artist + " - " + track.title)
 
 if __name__ == '__main__':
     main()
